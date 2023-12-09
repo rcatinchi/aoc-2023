@@ -27,4 +27,5 @@ EmptyLineBeforeAccessModifier: Always
 EmptyLineAfterAccessModifier: Never
 IncludeBlocks: Regroup
 IndentAccessModifiers: false
+IndentCaseLabels: true
 SpaceBeforeCpp11BracedList: true

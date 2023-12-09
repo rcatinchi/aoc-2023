@@ -1,51 +1,9 @@
+#include "aoc/filesystem.hpp"
+#include "aoc/print.hpp"
+#include "aoc/string_conv.hpp"
+
 #include <algorithm>
 #include <array>
-#include <charconv>
-#include <cstddef>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <iterator>
-#include <limits>
-#include <numeric>
-#include <string>
-#include <string_view>
-#include <vector>
-
-void println(auto &&...args)
-{
-    (std::cout << ... << std::forward<decltype(args)>(args));
-    std::cout << '\n';
-}
-
-template <typename T>
-T stringTo(std::string_view str)
-{
-    T value {};
-    std::from_chars(str.begin(), str.end(), value);
-    return value;
-}
-
-std::vector<std::string> readInput(const std::filesystem::path &path)
-{
-    std::ifstream fileStream { path.native() };
-
-    if (!fileStream.is_open())
-    {
-        using namespace std::string_literals;
-        throw std::filesystem::filesystem_error("Could not open file"s + path.native(),
-                                                std::error_code { errno, std::generic_category() });
-    }
-
-    std::vector<std::string> input;
-    std::string line;
-    while (std::getline(fileStream, line))
-    {
-        input.emplace_back(std::move(line));
-    }
-
-    return input;
-}
 
 int getResultOfPartOne(const std::vector<std::string> &input)
 {
@@ -53,8 +11,8 @@ int getResultOfPartOne(const std::vector<std::string> &input)
 
     for (std::string_view line : input)
     {
-        const int firstDigit { stringTo<int>(line.substr(line.find_first_of("123456789"), 1)) };
-        const int lastDigit { stringTo<int>(line.substr(line.find_last_of("123456789"), 1)) };
+        const int firstDigit { aoc::stringTo<int>(line.substr(line.find_first_of("123456789"), 1)) };
+        const int lastDigit { aoc::stringTo<int>(line.substr(line.find_last_of("123456789"), 1)) };
         result += firstDigit * 10;
         result += lastDigit;
     }
@@ -76,11 +34,11 @@ int getResultOfPartTwo(const std::vector<std::string> &input)
 
         Digit firstDigit;
         firstDigit.pos = line.find_first_of("123456789");
-        firstDigit.value = stringTo<int>(line.substr(firstDigit.pos, 1));
+        firstDigit.value = aoc::stringTo<int>(line.substr(firstDigit.pos, 1));
 
         Digit lastDigit;
         lastDigit.pos = line.find_last_of("123456789");
-        lastDigit.value = stringTo<int>(line.substr(lastDigit.pos, 1));
+        lastDigit.value = aoc::stringTo<int>(line.substr(lastDigit.pos, 1));
 
         constexpr std::array<std::string_view, 9> digitsInLetters { "one", "two",   "three", "four", "five",
                                                                     "six", "seven", "eight", "nine" };
@@ -118,10 +76,10 @@ int getResultOfPartTwo(const std::vector<std::string> &input)
 
 int main()
 {
-    const auto input { readInput(std::filesystem::current_path() / "input.txt") };
+    const auto input { aoc::readInput(std::filesystem::current_path() / "input.txt") };
 
-    println("Result Part One: ", getResultOfPartOne(input));
-    println("Result Part Two: ", getResultOfPartTwo(input));
+    aoc::println("Result Part One: ", getResultOfPartOne(input));
+    aoc::println("Result Part Two: ", getResultOfPartTwo(input));
 
     return 0;
 }

@@ -1,49 +1,6 @@
-#include <array>
-#include <charconv>
-#include <cstddef>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <limits>
-#include <numeric>
-#include <string>
-#include <string_view>
-#include <vector>
-
-void println(auto &&...args)
-{
-    (std::cout << ... << std::forward<decltype(args)>(args));
-    std::cout << '\n';
-}
-
-template <typename T>
-T stringTo(std::string_view str)
-{
-    T value {};
-    std::from_chars(str.begin(), str.end(), value);
-    return value;
-}
-
-std::vector<std::string> readInput(const std::filesystem::path &path)
-{
-    std::ifstream fileStream { path.native() };
-
-    if (!fileStream.is_open())
-    {
-        using namespace std::string_literals;
-        throw std::filesystem::filesystem_error("Could not open file"s + path.native(),
-                                                std::error_code { errno, std::generic_category() });
-    }
-
-    std::vector<std::string> input;
-    std::string line;
-    while (std::getline(fileStream, line))
-    {
-        input.emplace_back(std::move(line));
-    }
-
-    return input;
-}
+#include "aoc/filesystem.hpp"
+#include "aoc/print.hpp"
+#include "aoc/string_conv.hpp"
 
 int getResultOfPartOne(const std::vector<std::string> &input)
 {
@@ -55,10 +12,10 @@ int getResultOfPartOne(const std::vector<std::string> &input)
         constexpr int maxGreenCubes { 13 };
         constexpr int maxBlueCubes { 14 };
 
-        const size_t gameStrSize { std::string("Game ").size() };
+        const size_t gameStrSize { std::string_view("Game ").size() };
         const size_t semiColonPos { line.find(':') };
 
-        const int gameNumber { stringTo<int>(line.substr(gameStrSize, semiColonPos - gameStrSize)) };
+        const int gameNumber { aoc::stringTo<int>(line.substr(gameStrSize, semiColonPos - gameStrSize)) };
 
         line.remove_prefix(semiColonPos + 2);
 
@@ -71,7 +28,7 @@ int getResultOfPartOne(const std::vector<std::string> &input)
 
             const size_t spaceSeparatorPos { set.find(' ') };
 
-            const int count { stringTo<int>(set.substr(0, spaceSeparatorPos)) };
+            const int count { aoc::stringTo<int>(set.substr(0, spaceSeparatorPos)) };
             std::string_view colorStr { set.substr(spaceSeparatorPos + 1) };
 
             const int maxCount = [&]()
@@ -132,7 +89,7 @@ int getResultOfPartTwo(const std::vector<std::string> &input)
 
             const size_t spaceSeparatorPos { set.find(' ') };
 
-            const int count { stringTo<int>(set.substr(0, spaceSeparatorPos)) };
+            const int count { aoc::stringTo<int>(set.substr(0, spaceSeparatorPos)) };
             std::string_view colorStr { set.substr(spaceSeparatorPos + 1) };
 
             if (colorStr == "red")
@@ -160,10 +117,10 @@ int getResultOfPartTwo(const std::vector<std::string> &input)
 
 int main()
 {
-    const auto input = readInput(std::filesystem::current_path() / "input.txt");
+    const auto input = aoc::readInput(std::filesystem::current_path() / "input.txt");
 
-    println("Result Part One: ", getResultOfPartOne(input));
-    println("Result Part Two: ", getResultOfPartTwo(input));
+    aoc::println("Result Part One: ", getResultOfPartOne(input));
+    aoc::println("Result Part Two: ", getResultOfPartTwo(input));
 
     return 0;
 }
